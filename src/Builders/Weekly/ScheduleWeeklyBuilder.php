@@ -10,7 +10,7 @@ final class ScheduleWeeklyBuilder extends PdfPlanning
 {
     public function build(): self
     {
-        $grid = new PdfPlanningGridWeeklyBuilder($this->pdf, $this->config, $this->fonts);
+        $grid = new PdfPlanningGridWeeklyBuilder($this->pdf, $this->config, $this->fonts, $this->entries);
         $grid->addGrid();
 
         $slots = new PdfPlanningSlotsWeeklyBuilder($this->pdf, $this->config, $this->fonts, $this->entries);

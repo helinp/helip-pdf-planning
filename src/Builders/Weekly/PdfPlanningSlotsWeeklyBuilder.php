@@ -24,11 +24,34 @@ class PdfPlanningSlotsWeeklyBuilder extends PdfPlanningSlotBuilderAbstract
         /** @var PdfPlanningEntry $entry */
         foreach ($this->entries as $entry) {
             list($x, $y, $h) = $this->calculatePositioning($entry);
-            $this->drawCell($entry, $x, $y, $h);
+            $text = implode(PHP_EOL, $entry->getTexts());
+
+            $this->pdf->setFillColor(...$entry->getFillColor());
+            $this->pdf->setTextColor(...$entry->getTextColor());
+            $this->pdf->setLineStyle(PdfPlanningBorderStyle::STROKE_THICK);
+            $this->drawCell($text, $x, $y, $h);
+
             $this->addAdditionnalInfos($entry->getAdditionalInfos(), $h, $x, $y);
         }
 
         $this->pdf->endLayer();
+    }
+
+    protected function calculateSpecificVars(): void
+    {
+        $this->headerTitles = $this->config->headerTitles->getHeaderTitles();
+        $differenceMinute = DateTimeUtils::getDifferenceInMinutes($this->config->startTime, $this->config->endTime);
+        $this->minuteHeight = $this->gridHeight / $differenceMinute;
+    }
+
+    protected function setHeaderTitles(): void
+    {
+        $this->headerTitles = $this->config->headerTitles->getHeaderTitles();
+    }
+
+    protected function setSlotHeight(): void
+    {
+        $this->slotHeight = $this->gridHeight / $this->config->slotsNumber;
     }
 
     /**
@@ -48,38 +71,6 @@ class PdfPlanningSlotsWeeklyBuilder extends PdfPlanningSlotBuilderAbstract
             * DateTimeUtils::getDifferenceInMinutes($entry->getStartTime(), $entry->getEndTime());
 
         return [$x, $y, $h];
-    }
-
-    /**
-     * @param PdfPlanningEntry $entry
-     * @param float $x
-     * @param float $y
-     * @param float $h height of the cell
-     */
-    private function drawCell(PdfPlanningEntry $entry, float $x, float $y, float $h): void
-    {
-        $this->pdf->setFillColor(...$entry->getFillColor());
-        $this->pdf->setTextColor(...$entry->getTextColor());
-        $this->pdf->setLineStyle(PdfPlanningBorderStyle::STROKE_THICK);
-
-        $this->pdf->Multicell(
-            $this->colWidth,
-            $h,
-            implode(PHP_EOL, $entry->getTexts()),
-            PdfPlanningBorderStyle::STROKE_THIN,
-            'C',
-            1,
-            true,
-            $x,
-            $y,
-            true,
-            0,
-            false,
-            true,
-            0,
-            'M',
-            true
-        );
     }
 
     /**

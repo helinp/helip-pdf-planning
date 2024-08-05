@@ -4,29 +4,15 @@ declare(strict_types=1);
 
 namespace Helip\PdfPlanning\Builders;
 
-use Helip\PdfPlanning\Fonts\PdfPlanningFonts;
-use Helip\PdfPlanning\PdfPlanningConfig;
 use Helip\PdfPlanning\Styles\PdfPlanningBorderStyle;
-use Helip\PdfPlanning\Utils\DateTimeUtils;
-use TCPDF;
 
-abstract class PdfPlanningGridBuilderAbstract
+abstract class PdfPlanningGridBuilderAbstract extends PdfPlanningBuilderAbstract
 {
-    protected float $gridWidth;
-    protected float $gridHeigth;
-    protected int $colsNumber;
-    protected float $colWidth;
-    protected float $slotHeight;
     protected float $slotTimeLength;
     protected array $headerTitles;
+    protected array $lineHeaders;
+    protected float $slotHeight;
 
-    public function __construct(
-        protected TCPDF $pdf,
-        protected PdfPlanningConfig $config,
-        protected PdfPlanningFonts $fonts
-    ) {
-        $this->calculateVars();
-    }
 
     public function addGrid(): void
     {
@@ -37,22 +23,15 @@ abstract class PdfPlanningGridBuilderAbstract
     abstract protected function addRows(): void;
     abstract protected function addLineHeaders(float $h, float $y, float $x, string $text): void;
 
-    private function calculateVars(): void
+    protected function setSlotHeight(): void
     {
-        $differenceMinute = DateTimeUtils::getDifferenceInMinutes($this->config->startTime, $this->config->endTime);
-        $this->gridWidth = $this->config->pageWidth - ($this->config->marginX * 2) - $this->config->firstColWidth;
-        $this->gridHeigth = $this->config->pageHeight - $this->config->marginTopGrid - $this->config->marginBottomGrid;
-        $this->headerTitles = $this->config->headerTitles->getHeaderTitles();
-        $this->colsNumber = count($this->headerTitles);
-        $this->colWidth = $this->gridWidth / $this->colsNumber;
-        $this->slotHeight = $this->gridHeigth / $this->config->slotsNumber;
-        $this->slotTimeLength = $differenceMinute / $this->config->slotsNumber;
+        $this->slotHeight = $this->gridHeight / $this->config->slotsNumber;
     }
 
     private function addCols(): void
     {
         $y1 = $this->config->marginTopGrid;
-        $y2 = $this->gridHeigth + $y1;
+        $y2 = $this->gridHeight + $y1;
 
         $leftMargin = $this->config->marginX + $this->config->firstColWidth;
 

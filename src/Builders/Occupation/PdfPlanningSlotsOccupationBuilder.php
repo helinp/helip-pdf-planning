@@ -6,8 +6,8 @@ namespace Helip\PdfPlanning\Builders\Occupation;
 
 use Helip\PdfPlanning\Builders\PdfPlanningSlotBuilderAbstract;
 use Helip\PdfPlanning\Models\PdfPlanningEntry;
-use Helip\PdfPlanning\Styles\PdfPlanningBorderStyle;
 use Helip\PdfPlanning\Utils\DateTimeUtils;
+use Helip\PdfPlanning\Utils\EntryUtils;
 use Helip\PdfPlanning\Utils\TextUtils;
 
 class PdfPlanningSlotsOccupationBuilder extends PdfPlanningSlotBuilderAbstract
@@ -35,7 +35,7 @@ class PdfPlanningSlotsOccupationBuilder extends PdfPlanningSlotBuilderAbstract
                 $this->grille[$x . $y] = [
                     'x' => $x,
                     'y' => $y,
-                    'h' => $this->rowHeight,
+                    'h' => $this->slotHeight,
                     'texts' => []
                 ];
             }
@@ -45,45 +45,29 @@ class PdfPlanningSlotsOccupationBuilder extends PdfPlanningSlotBuilderAbstract
 
         foreach ($this->grille as $item) {
             $combinedText = TextUtils::combineTextsAndTimes($item['texts']);
-
-            $this->pdf->Multicell(
-                $this->colWidth,
-                $item['h'],
-                $combinedText,
-                PdfPlanningBorderStyle::STROKE_THIN,
-                'C',
-                false,
-                true,
-                $item['x'],
-                $item['y'],
-                true,
-                0,
-                false,
-                true,
-                0,
-                'M',
-                true
-            );
+            $this->drawCell($combinedText, $item['x'], $item['y'], $item['h']);
         }
 
         $this->pdf->endLayer();
     }
 
+    protected function setHeaderTitles(): void
+    {
+        $this->headerTitles =  EntryUtils::getUniqueLocation($this->entries);
+    }
 
+    protected function setSlotHeight(): void
+    {
+        $this->slotHeight = $this->gridHeight / $this->config->slotsNumber;
+    }
 
     /**
      * Calculate the variables needed to draw the grid.
      */
-    protected function calculateVars(): void
+    protected function calculateSpecificVars(): void
     {
         $differenceMinute = DateTimeUtils::getDifferenceInMinutes($this->config->startTime, $this->config->endTime);
-        $this->gridWidth = $this->config->pageWidth - ($this->config->marginX * 2) - $this->config->firstColWidth;
-        $this->gridHeight = $this->config->pageHeight - $this->config->marginTopGrid - $this->config->marginBottomGrid;
-        $this->headerTitles = $this->config->headerTitles->getHeaderTitles();
-        $this->colsNumber = count($this->headerTitles);
-        $this->colWidth = $this->gridWidth / $this->colsNumber;
         $this->minuteHeight = $this->gridHeight / $differenceMinute;
-        $this->rowHeight = $this->gridHeight / $this->config->slotsNumber;
     }
 
     /**
@@ -93,7 +77,7 @@ class PdfPlanningSlotsOccupationBuilder extends PdfPlanningSlotBuilderAbstract
     {
         $nCol = array_search($entry->getLocation(), $this->headerTitles);
         $x = $this->config->firstColWidth + $this->config->marginX + $nCol * $this->colWidth;
-        $y = ($entry->getDay() - 1) * $this->rowHeight + $this->config->marginTopGrid;
+        $y = ($entry->getDay() - 1) * $this->slotHeight + $this->config->marginTopGrid;
 
         $h = $this->minuteHeight * DateTimeUtils::getDifferenceInMinutes($entry->getStartTime(), $entry->getEndTime());
 

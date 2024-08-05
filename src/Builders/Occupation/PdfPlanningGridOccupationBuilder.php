@@ -7,6 +7,7 @@ namespace Helip\PdfPlanning\Builders\Occupation;
 use Helip\PdfPlanning\Builders\PdfPlanningGridBuilderAbstract;
 use Helip\PdfPlanning\Styles\PdfPlanningBorderStyle;
 use Helip\PdfPlanning\Utils\DateTimeUtils;
+use Helip\PdfPlanning\Utils\EntryUtils;
 
 class PdfPlanningGridOccupationBuilder extends PdfPlanningGridBuilderAbstract
 {
@@ -29,6 +30,20 @@ class PdfPlanningGridOccupationBuilder extends PdfPlanningGridBuilderAbstract
 
             $this->addLineHeaders($this->slotHeight, $y - $this->slotHeight, $this->config->marginX, $headerText);
         }
+    }
+
+    protected function calculateSpecificVars(): void
+    {
+    }
+
+    protected function setHeaderTitles(): void
+    {
+        $this->headerTitles =  EntryUtils::getUniqueLocation($this->entries);
+    }
+
+    protected function setSlotHeight(): void
+    {
+        $this->slotHeight = $this->gridHeight / $this->config->slotsNumber;
     }
 
     protected function addLineHeaders(float $h, float $y, float $x, string $text): void

@@ -4,43 +4,37 @@ declare(strict_types=1);
 
 namespace Helip\PdfPlanning\Builders;
 
-use Helip\PdfPlanning\Fonts\PdfPlanningFonts;
 use Helip\PdfPlanning\Models\PdfPlanningEntry;
-use Helip\PdfPlanning\PdfPlanningConfig;
-use Helip\PdfPlanning\Utils\DateTimeUtils;
-use TCPDF;
+use Helip\PdfPlanning\Styles\PdfPlanningBorderStyle;
 
-abstract class PdfPlanningSlotBuilderAbstract
+abstract class PdfPlanningSlotBuilderAbstract extends PdfPlanningBuilderAbstract
 {
-    protected float $gridWidth;
-    protected float $gridHeight;
-    protected int $colsNumber;
-    protected float $colWidth;
     protected array $headerTitles;
     protected float $minuteHeight;
-    protected float $rowHeight;
-
-    public function __construct(
-        protected TCPDF $pdf,
-        protected PdfPlanningConfig $config,
-        protected PdfPlanningFonts $fonts,
-        protected array $entries
-    ) {
-        $this->calculateVars();
-    }
-
-    protected function calculateVars(): void
-    {
-        $differenceMinute = DateTimeUtils::getDifferenceInMinutes($this->config->startTime, $this->config->endTime);
-        $this->gridWidth = $this->config->pageWidth - ($this->config->marginX * 2) - $this->config->firstColWidth;
-        $this->gridHeight = $this->config->pageHeight - $this->config->marginTopGrid - $this->config->marginBottomGrid;
-        $this->headerTitles = $this->config->headerTitles->getHeaderTitles();
-        $this->colsNumber = count($this->headerTitles);
-        $this->colWidth = $this->gridWidth / $this->colsNumber;
-        $this->minuteHeight = $this->gridHeight / $differenceMinute;
-        $this->rowHeight = $this-> gridHeight / $this->config->slotsNumber;
-    }
+    protected float $slotHeight;
 
     abstract protected function calculatePositioning(PdfPlanningEntry $entry): array;
     abstract protected function addEntriesSlots(): void;
+
+    protected function drawCell(string $text, float $x, float $y, float $h): void
+    {
+        $this->pdf->Multicell(
+            $this->colWidth,
+            $h,
+            $text,
+            PdfPlanningBorderStyle::STROKE_THIN,
+            'C',
+            true,
+            true,
+            $x,
+            $y,
+            true,
+            0,
+            false,
+            true,
+            0,
+            'M',
+            true
+        );
+    }
 }

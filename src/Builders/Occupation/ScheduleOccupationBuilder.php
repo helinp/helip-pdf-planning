@@ -10,7 +10,7 @@ final class ScheduleOccupationBuilder extends PdfPlanning
 {
     public function build(): self
     {
-        $grid = new PdfPlanningGridOccupationBuilder($this->pdf, $this->config, $this->fonts);
+        $grid = new PdfPlanningGridOccupationBuilder($this->pdf, $this->config, $this->fonts, $this->entries);
         $grid->addGrid();
 
         $slots = new PdfPlanningSlotsOccupationBuilder($this->pdf, $this->config, $this->fonts, $this->entries);

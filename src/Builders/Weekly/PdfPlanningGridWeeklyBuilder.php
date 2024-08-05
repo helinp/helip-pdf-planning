@@ -8,6 +8,7 @@ use DateInterval;
 use Helip\PdfPlanning\Builders\PdfPlanningGridBuilderAbstract;
 use Helip\PdfPlanning\Styles\PdfPlanningBorderStyle;
 use DateTime;
+use Helip\PdfPlanning\Utils\DateTimeUtils;
 
 class PdfPlanningGridWeeklyBuilder extends PdfPlanningGridBuilderAbstract
 {
@@ -30,6 +31,17 @@ class PdfPlanningGridWeeklyBuilder extends PdfPlanningGridBuilderAbstract
 
             $this->pdf->Line($x1, $y, $x2, $y, PdfPlanningBorderStyle::STROKE_THIN);
         }
+    }
+
+    protected function setHeaderTitles(): void
+    {
+        $this->headerTitles = $this->config->headerTitles->getHeaderTitles();
+    }
+
+    protected function calculateSpecificVars(): void
+    {
+        $differenceMinute = DateTimeUtils::getDifferenceInMinutes($this->config->startTime, $this->config->endTime);
+        $this->slotTimeLength = $differenceMinute / $this->config->slotsNumber;
     }
 
     protected function addLineHeaders(float $h, float $y, float $x, string $text): void

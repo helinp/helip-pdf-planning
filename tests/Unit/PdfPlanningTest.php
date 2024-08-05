@@ -237,16 +237,10 @@ class PdfPlanningTest extends TestCase
             marginX: 10,
             marginY: 10,
             firstColWidth: 10,
+            slotsNumber: 6,
             marginTopGrid: 30,
             marginBottomGrid: 20,
-            slotsNumber: 6,
-            stepsLength: 30,
-            startTime: new DateTime('1970-01-01 07:00:00'),
-            endTime: new DateTime('1970-01-01 19:25:00'),
             locale: 'es',
-            headerTitles: PdfPlanningWeeklyHeaders::createWithCustomTitles(
-                ...EntryUtils::getUniqueLocation($this->getDefaultData())
-            )
         );
 
         $pdfPlanning = new ScheduleOccupationBuilder(

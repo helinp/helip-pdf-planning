@@ -29,6 +29,9 @@ class PdfPlanningInitialize
         $pdf->setAutoPageBreak(true);
         $pdf->setFontSubsetting(true);
 
+        $pdf->setFillColor(255, 255, 255);
+        $pdf->SetTextColor(0, 0, 0);
+
         return $pdf;
     }
 }
