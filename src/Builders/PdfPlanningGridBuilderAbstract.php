@@ -56,7 +56,7 @@ abstract class PdfPlanningGridBuilderAbstract extends PdfPlanningBuilderAbstract
         $this->pdf->Multicell(
             $this->colWidth,
             $h,
-            strtoupper($this->headerTitles[$n]),
+            mb_strtoupper($this->headerTitles[$n]),
             '',
             'C',
             false,
