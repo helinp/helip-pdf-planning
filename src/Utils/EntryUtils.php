@@ -15,6 +15,7 @@ class EntryUtils
     public static function getUniqueLocation(array $entries): array
     {
         $locations = array_map(fn (PdfPlanningEntry $entry): string => $entry->getLocation(), $entries);
-        return array_unique($locations);
+        $uniqueLocations = array_unique($locations);
+        return array_values($uniqueLocations);
     }
 }
