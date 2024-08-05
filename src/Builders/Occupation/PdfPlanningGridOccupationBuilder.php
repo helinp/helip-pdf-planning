@@ -16,7 +16,7 @@ class PdfPlanningGridOccupationBuilder extends PdfPlanningGridBuilderAbstract
         $x1 = $this->config->firstColWidth + $this->config->marginX;
         $x2 = $this->config->pageWidth - $this->config->marginX;
 
-        for ($i = 0; $i <= $this->config->slotsNumber; ++$i) {
+        for ($i = 0; $i < $this->config->slotsNumber; ++$i) {
 
             $y = $this->config->marginTopGrid + ($i * $this->slotHeight);
 
