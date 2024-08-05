@@ -16,19 +16,19 @@ class PdfPlanningGridOccupationBuilder extends PdfPlanningGridBuilderAbstract
         $x1 = $this->config->firstColWidth + $this->config->marginX;
         $x2 = $this->config->pageWidth - $this->config->marginX;
 
-        for ($i = 0; $i < $this->config->slotsNumber; ++$i) {
+        for ($i = 0; $i <= $this->config->slotsNumber; ++$i) {
 
             $y = $this->config->marginTopGrid + ($i * $this->slotHeight);
 
-            $headerText = DateTimeUtils::getDayName($i + 1, $this->config->locale);
             $this->pdf->Line($x1, $y, $x2, $y, PdfPlanningBorderStyle::STROKE_THIN);
-
+            
             // Avoid to display the last line header
             if ($i === $this->config->slotsNumber) {
                 break;
             }
-
-            $this->addLineHeaders($this->slotHeight, $y - $this->slotHeight, $this->config->marginX, $headerText);
+            
+            $headerText = DateTimeUtils::getDayName($i + 1, $this->config->locale);
+            $this->addLineHeaders($this->slotHeight, $y, $this->config->marginX, $headerText);
         }
     }
 
@@ -53,7 +53,7 @@ class PdfPlanningGridOccupationBuilder extends PdfPlanningGridBuilderAbstract
 
         $this->pdf->StartTransform();
         $this->pdf->Rotate(90, $this->config->marginX, $y);
-        $this->pdf->TranslateX(-$this->slotHeight * 2);
+        $this->pdf->TranslateX(-$this->slotHeight);
 
         $this->pdf->Multicell(
             $h,
